@@ -1,0 +1,575 @@
+
+================
+sql tutorial
+==============--------------------=============------------
+SELECT (column) FROM (your table)
+select (column) from (your table)
+
+
+=== if you want to select the entire table you u use
+
+select * from (your table)
+-------DISTINCT-------------------------------
+== you can also select once and remove the dublicas in a column by using
+select distinct (column) from (your table)
+-----------------------------------------------
+LIMIT------------------------------------------
+=== you can also limit the number of rows returned by using, it will return the first 10 rows
+select (column) from (your table) LIMIT 10
+-----------------------------------------------
+-------COUNT-----------------------------------
+==The COUNT statement lets you do this by returning the number of rows in one or more columns.
+select count(*) from (your table)
+
+== it tells how many rows are filled and are not empty (non-missing values in a particular column)
+SELECT COUNT(birthdate) FROM people;
+
+-------------------------------------------------------------------------------------
+
+
+--------------------------DISTINCT and COUNT----------------------------------------
+===It's also common to combine COUNT with DISTINCT to count the number of distinct(no dublicates returned) values in a column.
+SELECT COUNT(DISTINCT birthdate) FROM people;
+
+
+--------------------------- exercise --------------------------------------
+1. Count the number of rows in the people table.
+select count(*) from people
+2.Count the number of (non-missing) birth dates in the people table.
+SELECT COUNT(birthdate) FROM people;
+3.Count the number of unique birth dates in the people table.
+SELECT COUNT(distinct birthdate) FROM people;
+
+--------------------------------------------------------------------------------------
+= equal
+<> not equal
+< less than
+> greater than
+<= less than or equal to
+>= greater than or equal to
+
+---------------------------------------------------------------------------------
+====For example, you can filter text records such as title. The following code returns all films with the title 'Metropolis':
+SELECT title
+FROM films
+WHERE title = 'Metropolis';
+
+==Notice that the WHERE clause always comes after the FROM statement!
+
+
+------------------------------exercise-----------------------------------------------
+1-Get the number of films released before 2000.
+SELECT COUNT(*) FROM films WHERE release_year < 2000
+2-Get the title and release year of films released after 2000.
+SELECT title, release_year FROM films 
+WHERE release_year > 2000
+-------------------------------------------------------------------------------------
+==ex.
+SELECT title
+FROM films
+WHERE country = 'China';
+-----------------------------------------------------------------------------------
+-------------exercise----------------------------------------------------------------
+1.Get all details for all French language films.
+select * from films where language = 'French'
+2.Get the name and birth date of the person born on November 11th, 1974. Remember to use ISO date format ('1974-11-11')!
+select name, birthdate from people where birthdate = ('1974-11-11')
+3.Get the number of Hindi language films.
+select count(language) from films where language = 'Hindi'
+4.Get all details for all films with an R certification.
+select * from films 
+where certification = 'R'
+---------------------------------------------------------------------------------
+
+------------- WHERE AND ------------------------------------------------------
+===gives you the titles of films released between 1994 and 2000.
+SELECT title
+FROM films
+WHERE release_year > 1994
+AND release_year < 2000;
+
+==Note that you need to specify the column name separately for every AND condition,
+==ex. Get all details for Spanish language films released after 2000.
+select * from films 
+where language = 'Spanish'
+and release_year > 2000
+-------------------------------------------------------------------------------------
+
+
+--------------------------WHERE AND OR-------------------------------
+==For example, the following returns all films released in either 1994 or 2000:
+SELECT title
+FROM films
+WHERE release_year = 1994
+OR release_year = 2000;
+
+
+==When combining AND and OR, be sure to enclose the individual clauses in parentheses, like so:
+
+SELECT title
+FROM films
+WHERE (release_year = 1994 OR release_year = 1995)
+AND (certification = 'PG' OR certification = 'R');
+== Otherwise, due to SQL's precedence rules, you may not get the results you're expecting!
+
+====For example, the following query selects all films that were released in 1994 or 1995 which had a rating of PG or R.
+
+SELECT title, release_year, certification
+FROM films
+WHERE (release_year = 1994 OR release_year = 1995)
+AND (certification = 'PG' OR certification = 'R');
+
+== it returns 1995 and 1994 with certifcate of R and PG
+
+------------------------------------------------------------------------------------------
+
+----------------exercise-----------------------------------------------------
+==Now you'll write a query to get the title and release year of films released in the 90s which were in French or Spanish and which took in more than $2M gross.
+step 1.Get the title and release year for films released in the 90s.
+SELECT title, release_year
+SELECT title, release_year
+FROM films
+WHERE (release_year >= 1990 
+AND release_year < 2000)
+
+2.Now, build on your query to filter the records to only include French or Spanish language films.
+SELECT title, release_year
+FROM films
+WHERE (release_year >= 1990 
+AND release_year < 2000)
+and (language = 'French' or language = 'Spanish')
+
+3.SELECT title, release_year
+FROM films
+WHERE (release_year >= 1990 AND release_year < 2000)
+AND (language = 'French' OR language = 'Spanish')
+and gross > 2000000
+
+=== and walaa!! you finish the first long question like that
+
+
+--------------BETWEEN ----------------------------------------------------------
+
+SELECT title
+FROM films
+WHERE release_year >= 1994
+AND release_year <= 2000;
+
+== the one above is equal to using BETWEEN
+
+SELECT title
+FROM films
+WHERE release_year
+BETWEEN 1994 AND 2000;
+
+==It's important to remember that BETWEEN is inclusive, meaning the beginning and end values are included in the results!
+
+
+SELECT name
+FROM kids
+WHERE age BETWEEN 2 AND 12
+AND nationality = 'USA';
+---------------------------------------------------------------------------------------
+
+---------------exercise --------------------------------------------------------
+1.Take a go at using BETWEEN with AND on the films data to get the title and release year of all Spanish language films released between 1990 and 2000 (inclusive) with budgets over $100 million. 
+
+select title, release_year, language from films
+where language ='Spanish' 
+and release_year between 1990 and 2000
+and budget > 100000000
+
+== they are the same 
+
+SELECT title, release_year
+FROM films
+WHERE release_year BETWEEN 1990 AND 2000
+AND budget > 100000000
+AND language = 'Spanish';
+------------------------------------------------------------------------------------
+
+---------------------------------WHERE IN-----------------------------------------------------
+
+SELECT name
+FROM kids
+WHERE age = 2
+OR age = 4
+OR age = 6
+OR age = 8
+OR age = 10;
+
+== Enter the IN operator! The IN operator allows you to specify multiple values in a WHERE clause, making it easier and quicker to specify multiple OR conditions! Neat, right?
+
+SELECT name
+FROM kids
+WHERE age IN (2, 4, 6, 8, 10);
+
+==ex.
+=== Get the title and release year of all films released in 1990 or 2000 that were longer than two hours. Remember, duration is in minutes!
+select title, release_year 
+from films
+where release_year in (1990, 2000)
+and duration > 120
+
+2. Get the title and language of all films which were in English, Spanish, or French.
+select title, language 
+from films
+where language in ('Spanish','English','French')
+
+----------------------------------------------------------------------------------------------------------------
+
+--------------------------------NULL and IS NULL--------------------------------------------
+
+==to count the number of missing birth dates in the people table:
+SELECT COUNT(*)
+FROM people
+WHERE birthdate IS NULL;
+
+==this query gives the names of all people whose birth dates are not missing in the people table.
+SELECT name
+FROM people
+WHERE birthdate IS NOT NULL;
+
+== Get the names of people who are still alive, i.e. whose death date is missing.
+select name
+from people
+where deathdate is null
+
+==Get the number of films which don't have a language associated with them.
+
+select count(*)
+from films
+where language is null
+----------------------------------------
+
+----------------------LIKE and NOT LIKE--------
+
+==In SQL, the LIKE operator can be used in a WHERE clause to search for a pattern in a column. To accomplish this, you use something called a wildcard as a placeholder for some other values. There are two wildcards you can use with LIKE:
+
+==The % wildcard will match zero, one, or many characters in text. For example, the following query matches companies like 'Data', 'DataC' 'DataCamp', 'DataMind', and so on:
+
+SELECT name
+FROM companies
+WHERE name LIKE 'Data%';
+
+==The _ wildcard will match a single character. For example, the following query matches companies like 'DataCamp', 'DataComp', and so on:
+
+SELECT name
+FROM companies
+WHERE name LIKE 'DataC_mp';
+
+===Get the names of all people whose names begin with 'B'. The pattern you need is 'B%'.
+
+select name
+from people
+where name like 'B%'
+
+===Get the names of people whose names have 'r' as the second letter. The pattern you need is '_r%'.
+SELECT name
+FROM people
+WHERE name LIKE '_r%';
+
+===Get the names of people whose names don't start with A. The pattern you need is 'A%'.
+select name
+from people
+where name not like 'A%'
+
+============================================================================================================
+
+
+-----------------Aggregate functions------------
+
+==Often, you will want to perform some calculation on the data in a database. SQL provides a few functions, called aggregate functions, to help you out with this.
+== AVG = average
+SELECT AVG(budget)
+FROM films;
+
+SELECT MAX(budget)
+FROM films;
+
+SELECT MIN(budget)
+FROM films;
+
+SELECT SUM(budget)
+FROM films;
+
+
+===Get the duration of the shortest film.
+select min(duration)
+from films
+
+------------------------------------------------
+
+------------------aggregate functions with WHERE-------
+
+===For example, to get the total budget of movies made in the year 2010 or later:
+SELECT SUM(budget)
+FROM films
+WHERE release_year >= 2010;
+
+
+==Get the average amount grossed by all films whose titles start with the letter 'A'.
+
+SELECT AVG(gross)
+FROM films
+WHERE title like 'A%'
+
+
+--------------------------------
+-----------------Aliases -------------
+==Aliases are helpful for making results more readable!
+'As max_budget' is the aliase column name, they are temporary
+SELECT MAX(budget) AS max_budget,
+       MAX(duration) AS max_duration
+FROM films;
+
+==Get the title and net profit (the amount a film grossed, minus its budget) for all films. Alias the net profit as net_profit.
+
+select title, (gross - budget) as net_profit
+from films
+
+==Get the title and duration in hours for all films. The duration is in minutes, so you'll need to divide by 60.0 to get the duration in hours. Alias the duration in hours as duration_hours.
+select title, (duration/60.0) as duration_hours
+from films
+
+==Recall: SQL assumes that if you divide an integer by an integer, you want to get an integer back.
+
+==This means that the following will erroneously result in 400.0:
+SELECT 45 / 10 * 100.0;
+=== this is bc 45/10 in sql evaluates to 4 then times 100.0 you gues it 400.0
+== so in order to avoide that we must be smarter and use this method instead
+SELECT 45 * 100.0/10
+== this one will give us 450, what we expected
+== the reason is 100.0/10 gives us 10.0 a decimal
+
+------------------------------exercise------------------------------------------
+1.Get the percentage of people who are no longer alive. Alias the result as percentage_dead. Remember to use 100.0 and not 100!
+select count(deathdate) * 100.0 / count(*) as percentage_dead
+from people
+2.Get the number of decades the films table covers. Alias the result as number_of_decades. The top half of your fraction should be enclosed in parentheses.
+select (MAX(release_year) - MIN(release_year))/10.0
+AS number_of_decades
+from films
+
+===========================================================================================================================================================================================
+
+
+----------------------------------ORDER BY--------------------------
+==In SQL, the ORDER BY keyword is used to sort results in ascending or descending order according to the values of one or more columns.
+SELECT title
+FROM films
+ORDER BY release_year
+
+
+==By default ORDER BY will sort in ascending order. If you want to sort the results in descending order, you can use the ->DESC<- keyword. For example,
+
+SELECT title
+FROM films
+ORDER BY release_year DESC;
+
+
+
+------------------------------------------------------------
+--------------------------exercise ------------------------------
+1.Get the title of films released in 2000 or 2012, in the order they were released.
+select title, release_year
+from films
+where release_year in (2000,2012)
+order by release_year
+2.Get all details for all films except those released in 2015 and order them by duration.
+
+select *
+from films
+where release_year not in (2015)
+order by duration
+
+3.Get the title and gross earnings for movies which begin with the letter 'M' and order the results alphabetically.
+
+select title, gross
+from films
+where title like 'M%'
+order by title
+-------------------------------------------------------------------------
+
+---------------------------------Sorting multiple columns----------------------------
+==ORDER BY can also be used to sort on multiple columns. It will sort by the first column specified, then sort by the next, then the next, and so on. 
+== this type of sorting won't be noticeble unless there is dublicates with deferent columns
+ex. | release_year |   certification |
+    | 1933         |   Approved      |  
+    | 1935         |   Approved      |    
+    | 1936         |   Approved      |  
+
+== in the above example we used ->
+
+select release_year, certification
+from films
+order by certification, release_year
+== what it does is, it will order them in the certification alphabetic order
+== if there is two certificates who are the same but with d/f release years, it will use the 
+== the second parameter and order it using release years b/w  those two
+==The second column acts as a tie breaker.
+
+------------------------------------------------------------------------------------------------------------------
+
+--------------------- exercise ---------------------------------------------------------------------------------------
+1.Get the birth date and name of people in the people table, in order of when they were born and alphabetically by name.
+SELECT birthdate, name
+FROM people
+ORDER BY birthdate, name;
+
+2.Get the release year, duration, and title of films ordered by their release year and duration.
+select release_year, duration, title
+from films
+order by release_year, duration
+
+--------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------GROUP BY -------------------------------------------------------
+
+==Commonly, GROUP BY is used with aggregate functions like COUNT() or MAX(). Note that GROUP BY always goes after the FROM clause!
+
+SELECT sex, count(*)
+FROM employees
+GROUP BY sex;
+
+A word of warning: SQL will return an error if you try to SELECT a field that is not in your GROUP BY clause without using it to calculate some kind of value about the entire group.
+
+Note that you can combine GROUP BY with ORDER BY to group your results, calculate something about them, and then order your results. For example,
+
+SELECT sex, count(*)
+FROM employees
+GROUP BY sex
+ORDER BY count DESC;
+
+==might return something like
+== bc the agregated function count is in desendeing bc of DESC, 19 -> 15 -> --
+
+sex     |  count
+--------|-------------
+female	|  19
+male	|  15
+
+==Note also that ORDER BY always goes after GROUP BY
+
+-------------------------------------------------------------------------------------
+
+---------------------------- exercise ---------------------------
+1.Get the release year and count of films released in each year.
+select release_year, count(*)
+from films
+group by release_year
+
+=== it says, select all(count(*)) release years from films and group them in folders
+=== of release year, each release year tells us how many movies it has
+== you can also order the release year in asending way to see eaach
+== consequative years number of released movies by using
+select release_year, count(*)
+from films
+group by release_year
+order by release_year
+
+2.Get the release year and largest budget for all films, grouped by release year.
+select release_year, max(budget)
+from films
+group by release_year
+order by release_year --> extra line of code for me huhu huhu!!!
+
+=== what the above one does is it gets the hightest budget in that year
+=== and it shows you, i can't belive in 1960 the highest budget movie was 100,000
+
+3.Get the language and total gross amount films in each language made.
+
+select language, sum(gross)
+from films
+group by language
+
+
+4.Get the release year, country, and highest budget spent making a film for each year, for each country. Sort your results by release year and country.
+
+SELECT release_year, country, MAX(budget)
+FROM films
+GROUP BY release_year, country
+ORDER BY release_year, country;
+
+5.Get the country, release year, and lowest amount grossed per release year per country. Order your results by country and release year.
+
+select country, release_year, min(gross)
+from films
+group by release_year, country
+order by country, release_year
+
+
+------------------------------------------------------------------
+
+-----------------------HAVING ----------------------------------
+==In SQL, aggregate functions can't be used in WHERE clauses. For example, the following query is invalid:
+SELECT release_year
+FROM films
+GROUP BY release_year
+WHERE COUNT(title) > 10;
+
+==This means that if you want to filter based on the result of an aggregate function, you need another way! That's where the HAVING clause comes in. For example,
+SELECT release_year
+FROM films
+GROUP BY release_year
+HAVING COUNT(title) > 10;
+
+----------------------------------------------------------------------------------------------
+1.Get the country, average budget, and average gross take of countries that have made more than 10 films. Order the result by country name, and limit the number of results displayed to 5. You should alias the averages as avg_budget and avg_gross respectively.
+
+select country, avg(budget) as avg_budget, avg(gross) as avg_gross
+from films
+group by country
+having count(country) > 10
+order by country
+limit 5
+
+
+
+
+
+
+
+
+
+
+
+
+======================================================================================
+
+
+
+*************************************************************
+		KeyWords used
+*************************************************************
+SELECT title
+FROM films
+
+
+ORDER BY
+ORDER BY name DESC
+Aliases
+
+
+
+
+
+
+*************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
